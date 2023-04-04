@@ -1,67 +1,69 @@
 #include "lists.h"
 
 /**
- * free_listint_safe - frees a linked list
- * @h: double pointer to head of list
+ * free_listp2 - frees a linked list
+ * @head: head of a list.
  *
- * Return: size of the list that was freed
+ * Return: no return.
  */
-size_t free_listint_safe(listint_t **h)
+void free_listp2(listp_t **head)
 {
-    size_t nnodes = 0;
-    listp_t *head = NULL, *tmp, *prev;
-    listint_t *current;
+	listp_t *temp;
+	listp_t *curr;
 
-    if (h == NULL || *h == NULL)
-        return (0);
-
-    while (*h != NULL)
-    {
-        tmp = malloc(sizeof(listp_t));
-        if (tmp == NULL)
-        {
-            free_listp(&head);
-            exit(98);
-        }
-        tmp->p = (void *)*h;
-        tmp->next = head;
-        head = tmp;
-        prev = NULL;
-        current = *h;
-        while (current != NULL)
-        {
-            if (current == tmp->p)
-            {
-                *h = NULL;
-                free_listp(&head);
-                return (nnodes);
-            }
-            prev = current;
-            current = current->next;
-        }
-        nnodes++;
-        *h = (*h)->next;
-        free(prev);
-    }
-    *h = NULL;
-    free_listp(&head);
-    return (nnodes);
+	if (head != NULL)
+	{
+		curr = *head;
+		while ((temp = curr) != NULL)
+		{
+			curr = curr->next;
+			free(temp);
+		}
+		*head = NULL;
+	}
 }
 
 /**
- * free_listp - frees a linked list
- * @head: pointer to head of list
+ * free_listint_safe - frees a linked list.
+ * @h: head of a list.
  *
- * Return: no return
+ * Return: size of the list that was freed.
  */
-void free_listp(listp_t **head)
+size_t free_listint_safe(listint_t **h)
 {
-    listp_t *current;
+	size_t nnodes = 0;
+	listp_t *hptr = NULL, *new_node = NULL, *add = NULL;
+	listint_t *curr = NULL;
 
-    while (*head != NULL)
-    {
-        current = *head;
-        *head = (*head)->next;
-        free(current);
-    }
+	while (*h != NULL)
+	{
+		new_node = malloc(sizeof(listp_t));
+		if (new_node == NULL)
+			exit(98);
+
+		new_node->p = (void *)*h;
+		new_node->next = hptr;
+		hptr = new_node;
+
+		add = hptr;
+		while (add->next != NULL)
+		{
+			add = add->next;
+			if (*h == add->p)
+			{
+				*h = NULL;
+				free_listp2(&hptr);
+				return (nnodes);
+			}
+		}
+
+		curr = *h;
+		*h = (*h)->next;
+		free(curr);
+		nnodes++;
+	}
+
+	*h = NULL;
+	free_listp2(&hptr);
+	return (nnodes);
 }
