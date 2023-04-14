@@ -1,17 +1,16 @@
 #include "main.h"
 
 /**
- * print_binary - prints the binary representation of a number
- * @n: unsigned long int to print in binary
+ * print_binary - prints the binary representation of a number.
+ * @n: unsigned long int.
  *
- * Return: no return
+ * Return: no return.
  */
 void print_binary(unsigned long int n)
 {
-	unsigned long int mask = 0;
+	unsigned long int mask = 1;
+	unsigned long int size = sizeof(n) * 8;
 	int flag = 0;
-
-	mask = ~0UL >> 1;
 
 	if (n == 0)
 	{
@@ -19,9 +18,9 @@ void print_binary(unsigned long int n)
 		return;
 	}
 
-	while (mask)
+	while (size--)
 	{
-		if (n & mask)
+		if (n & (mask << size))
 		{
 			_putchar('1');
 			flag = 1;
@@ -30,6 +29,5 @@ void print_binary(unsigned long int n)
 		{
 			_putchar('0');
 		}
-		mask >>= 1;
 	}
 }
