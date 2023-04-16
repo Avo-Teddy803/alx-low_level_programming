@@ -1,53 +1,35 @@
 #include "main.h"
 
 /**
- * read_textfile - reads a text file and prints it to the POSIX standard output.
- * @filename: pointer to the name of the file to read.
- * @letters: number of letters to read and print.
+ * create_file - creates a file with some content
+ * @filename: name of the file to create
+ * @text_content: content to put in the file
  *
- * Return: number of letters read and printed. If file cannot be opened or read,
- *         return 0. If @filename is NULL, return 0. If @write fails or does not
- *         write the expected amount of bytes, return 0.
+ * Return: 1 on success, -1 on failure
  */
-ssize_t read_textfile(const char *filename, size_t letters)
+int create_file(const char *filename, char *text_content)
 {
-	int fd;
-	ssize_t nrd, nwr;
-	char *buf;
+	int fd, i;
 
-	if (filename == NULL)
-		return (0);
+	if (!filename)
+		return (-1);
 
-	fd = open(filename, O_RDONLY);
-
+	fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0600);
 	if (fd == -1)
-		return (0);
+		return (-1);
 
-	buf = malloc(sizeof(char) * (letters));
-	if (buf == NULL)
+	if (!text_content)
+		text_content = "";
+
+	for (i = 0; text_content[i]; i++)
+		;
+
+	if (write(fd, text_content, i) == -1)
 	{
 		close(fd);
-		return (0);
-	}
-
-	nrd = read(fd, buf, letters);
-	if (nrd == -1)
-	{
-		close(fd);
-		free(buf);
-		return (0);
-	}
-
-	nwr = write(STDOUT_FILENO, buf, nrd);
-	if (nwr == -1 || nwr != nrd)
-	{
-		close(fd);
-		free(buf);
-		return (0);
+		return (-1);
 	}
 
 	close(fd);
-	free(buf);
-
-	return (nwr);
+	return (1);
 }
