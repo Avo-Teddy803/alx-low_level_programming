@@ -2,46 +2,52 @@
 
 /**
  * read_textfile - reads a text file and prints it to the POSIX standard output.
- * @filename: name of the file to read.
- * @letters: number of bytes to read and print.
+ * @filename: pointer to the name of the file to read.
+ * @letters: number of letters to read and print.
  *
- * Return: the number of bytes read and printed, or 0 if an error occurred.
+ * Return: number of letters read and printed. If file cannot be opened or read,
+ *         return 0. If @filename is NULL, return 0. If @write fails or does not
+ *         write the expected amount of bytes, return 0.
  */
 ssize_t read_textfile(const char *filename, size_t letters)
 {
-    int fd;
-    ssize_t nrd, nwr;
-    char *buf;
+	int fd;
+	ssize_t nrd, nwr;
+	char *buf;
 
-    if (!filename)
-        return (0);
+	if (filename == NULL)
+		return (0);
 
-    fd = open(filename, O_RDONLY);
-    if (fd == -1)
-        return (0);
+	fd = open(filename, O_RDONLY);
 
-    buf = malloc(sizeof(char) * letters);
-    if (!buf) {
-        close(fd);
-        return (0);
-    }
+	if (fd == -1)
+		return (0);
 
-    nrd = read(fd, buf, letters);
-    if (nrd == -1) {
-        free(buf);
-        close(fd);
-        return (0);
-    }
+	buf = malloc(sizeof(char) * (letters));
+	if (buf == NULL)
+	{
+		close(fd);
+		return (0);
+	}
 
-    nwr = write(STDOUT_FILENO, buf, nrd);
-    if (nwr == -1 || (size_t) nwr != (size_t) nrd) {
-        free(buf);
-        close(fd);
-        return (0);
-    }
+	nrd = read(fd, buf, letters);
+	if (nrd == -1)
+	{
+		close(fd);
+		free(buf);
+		return (0);
+	}
 
-    free(buf);
-    close(fd);
+	nwr = write(STDOUT_FILENO, buf, nrd);
+	if (nwr == -1 || nwr != nrd)
+	{
+		close(fd);
+		free(buf);
+		return (0);
+	}
 
-    return (nrd);
+	close(fd);
+	free(buf);
+
+	return (nwr);
 }
